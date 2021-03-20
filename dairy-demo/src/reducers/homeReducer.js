@@ -1,27 +1,31 @@
 import {
     GET_TODO_LIST,
-    ADD_TODO_DETAILS
+    TODO_BY_SEARCH,
+    GET_TODO_BY_ID
   } from "../actions/types";
   
   var initialState = {
-      
+      todoList:[]
   };
   const Reducer = (state = initialState, action) => {
-  
     switch (action.type) {
         case GET_TODO_LIST:
           return {
             ...state,
             todoList: action.payload,
           };
-          
-        case ADD_TODO_DETAILS:
+          case GET_TODO_BY_ID:
+          return {
+            ...state,
+            todoList: action.payload,
+          };
+        case TODO_BY_SEARCH:
         return {
           ...state,
-         addTodo: action.payload,
+          sTodoList: action.payload,
         };
        default:
-              return state;
+          return state;
       }
   };
   export default Reducer;

@@ -1,3 +1,0 @@
-export const GET_TODO_LIST = 'GET_TODO_LIST';
-export const ADD_TODO_DETAILS = 'ADD_TODO_DETAILS';
-export const DELETE_TODO_BY_ID = 'DELETE_TODO_BY_ID';

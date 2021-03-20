@@ -192,7 +192,7 @@ code {
   margin-right: 20px;
 }
 .searhing input{
-  width: auto;
+  width: 200px;
   cursor: pointer;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -235,7 +235,7 @@ code {
 }
 .card-main-conatiner{
   width: 320px;
-  height: 300px;
+  height: 250px;
   margin: 10px;
   border-radius: 8px;
   justify-content: center;
@@ -257,13 +257,43 @@ code {
   cursor: pointer;
 }
 .Priority{
+  margin-top: 20px;
   padding: 5px;
   font-size: 14px;
 }
 .content{
   padding: 5px;
+  margin-top: 20px;
 }
 .datetime{
+  margin-top: 10px;
   font-size: 12px;
   color: gray;
+}
+.deatield_list_page{
+  width: 700px;
+  height: auto;
+  justify-content: center;
+  margin: 120px auto;
+  border-radius: 20px;
+  box-shadow: 0 0 5px rgb(19, 18, 18);
+  padding: 20px;
+  display: flex;
+  flex: 3;
+  justify-content: flex-start;
+  background: rgba(243, 243, 243, 0.651);
+}
+.deatield_list_page ul{
+  list-style: none;
+}
+.deatield_list_page .tile_name li{
+  color: black !important;
+  font-weight: bold !important;
+  padding: 10px !important;
+}
+.deatield_list_page ul li{
+  color: gray;
+ 
+  font-weight: normal;
+  padding: 10px;
 }

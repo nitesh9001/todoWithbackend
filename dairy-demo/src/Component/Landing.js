@@ -2,133 +2,57 @@ import React, { Component } from "react";
 import CardNotes from "../Common/CardNotes";
 import Footer from "../Common/Footer";
 import Header from "../Common/Header";
-import { Button, Tooltip } from "@material-ui/core";
-import moment from "moment";
-import Swal from "sweetalert";
+import { Tooltip } from "@material-ui/core";
 import AddForm from "../Common/AddForm";
-// import ReactQuill from "react-quill";
+import { connect } from "react-redux";
+import PropTypes from "prop-types";
+import {gettodoList,deleteTodo,searchTodo} from '../actions/action';
+import { Link } from "react-router-dom";
 
-export default class Landing extends Component {
+
+class Landing extends Component {
   state = {
     openAdd: false,
     sortType: "",
+    dataForfilter:[],
     dataToedit: "",
     editData: "",
-    id: "",
-    title: "",
-    notes: "",
-    priority: "",
-    importantDate: "",
-    importantLink: "",
     data: "",
-    favrouite: false,
-    notes_dairy: [
-      {
-        id: 1,
-        title: "Daily update",
-        notes:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio hic nemo quas, dolore perspiciatis expedita placeat assumenda aliquid cumque itaque amet rem fugiat. Ipsam in tenetur officia vitae nobis qui!",
-        priority: "high",
-        importantDate: "12-01-2021",
-        importantLink: "www.google.com",
-        CreatedAt: "1619515835",
-        favrouite: true,
-      },
-      {
-        id: 2,
-        title: "Daily update 2",
-        notes:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio hic nemo quas, dolore perspiciatis expedita placeat assumenda aliquid cumque itaque amet rem fugiat. Ipsam in tenetur officia vitae nobis qui!",
-        priority: "Medium",
-        importantDate: "12-01-2021",
-        importantLink: "www.google.com",
-        CreatedAt: "1609515814",
-        favrouite: false,
-      },
-      {
-        id: 3,
-        title: "Daily update 3",
-        notes:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio hic nemo quas, dolore perspiciatis expedita placeat assumenda aliquid cumque itaque amet rem fugiat. Ipsam in tenetur officia vitae nobis qui!",
-        priority: "low",
-        importantDate: "12-01-2021",
-        importantLink: "www.google.com",
-        CreatedAt: "1619015835",
-        favrouite: true,
-      },
-      {
-        id: 4,
-        title: "Daily update 4",
-        notes:
-          "Lorem ipsum dolor sit amet consectetur adipisicing elit. Optio hic nemo quas, dolore perspiciatis expedita placeat assumenda aliquid cumque itaque amet rem fugiat. Ipsam in tenetur officia vitae nobis qui!",
-        priority: "high",
-        importantDate: "12-01-2021",
-        importantLink: "www.google.com",
-        CreatedAt: "1612500835",
-        favrouite: false,
-      },
-    ],
+    notes_dairy: [],
+    searchList:[],
+    searchingBegin:false
   };
+
+  componentDidMount(){
+   this.props.gettodoList();
+  }
+
+  componentWillReceiveProps=(nextProps)=>{
+    console.log(nextProps,'nexprops')
+    this.setState({
+      notes_dairy:nextProps.todoList.data,
+      dataForfilter:nextProps.todoList.data,
+    });
+    if(nextProps.newList){
+      console.log(nextProps.newList,'data')
+      this.setState({
+        searchList:nextProps.newList.data,
+      });
+    }
+  };
+
   handleChange = (e) => {
     e.preventDefault();
     this.setState({
       [e.target.name]: e.target.value,
     });
   };
-  saveData = (e) => {
-    e.preventDefault();
-    const date = new Date();
-    var unixTimestamp = moment(date, "YYYY.MM.DD").unix();
-    console.log(unixTimestamp);
-    const data = {
-      id: this.state.id,
-      title: this.state.title,
-      notes: this.state.notes,
-      priority: this.state.priority,
-      importantDate: this.state.importantDate,
-      importantLink: this.state.importantLink,
-      favrouite: false,
-      CreatedAt: unixTimestamp,
-    };
-    console.log(data);
-    this.setState({
-      notes_dairy: [...this.state.notes_dairy, data],
-      openAdd: false,
-      sortType: "",
-    });
-    Swal({
-      title: "Added Successfully.!",
-      icon: "success",
-      text: "",
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Ok",
-    });
-  };
-  edit(id) {
-    this.setState({
-      openAdd: true,
-    });
-    console.log(id);
-    var d = this.state.notes_dairy.filter((item) => item.id === id);
-    const data = {
-      id: d.id,
-      title: d.title,
-      notes: d.notes,
-      priority: d.priority,
-      importantDate: d.importantDate,
-      importantLink: d.importantLink,
-    };
-    this.setState({
-      data: data,
-    });
-  }
+ 
   Delete(id) {
     console.log(id);
-    this.setState({
-      notes_dairy: this.state.notes_dairy.filter((item) => item.id !== id),
-    });
-  }
+    this.props.deleteTodo(id)
+  };
+
   handleSOrting = (e) => {
     e.preventDefault();
     this.setState({
@@ -136,18 +60,34 @@ export default class Landing extends Component {
     });
   };
 
+  handleFilter=(e)=>{
+    console.log(e.target.value)
+    const data=this.state.dataForfilter.filter(d=>d.priority === e.target.value)
+    console.log(data,'new')
+    this.setState({
+      notes_dairy:data
+    })
+  };
+
+  search=(e)=>{
+    this.props.searchTodo(e.target.value);
+    this.setState({
+      searchingBegin:true
+    });
+  };
+
   render() {
-    const { data } = this.state;
-    const { notes_dairy, sortType } = this.state;
+    const { notes_dairy, sortType, searchList } = this.state;
     const sortedNotes = sortType
       ? notes_dairy.sort((a, b) => {
           const isReversed = sortType === "ascend" ? 1 : -1;
           return (
             isReversed *
-            a.CreatedAt.toString().localeCompare(b.CreatedAt.toString())
+            a.createdAt.toString().localeCompare(b.createdAt.toString())
           );
         })
       : notes_dairy;
+      
     return (
       <div>
         <Header />
@@ -223,7 +163,6 @@ export default class Landing extends Component {
                       <option value={""}>Sort Notes</option>
                       <option value={"decend"}>Newest First</option>
                       <option value={"ascend"}>Oldest First</option>
-                      <option value={"priority"}>Priority Wise</option>
                     </select>
                   </div>
                   <div className="filtering">
@@ -232,25 +171,30 @@ export default class Landing extends Component {
                       value={this.state.filter}
                       name="filter"
                     >
-                      <option>Date Filter</option>
-                      <option>This Week</option>
-                      <option>This Month</option>
-                      <option>This Year</option>
+                      <option>Priority Filter</option>
+                      <option value={1}>High</option>
+                      <option value={2}>Medium</option>
+                      <option value={3}>Low</option>
                     </select>
                   </div>
+                  <Link to="/searching..">
                   <div className="searhing">
-                    <input type="search" placeholder="Search" />
-                    <button class="button_search">
+                  
+                    <input type="search" placeholder="Search" onChange={this.search.bind(this)}/>
+                    <button class="button_search" onClick={this.search.bind(this)}>
                       <i
                         class="fa fa-search"
                         aria-hidden="true"
+                         
                         style={{ cursor: "pointer" }}
                       ></i>
                     </button>
                   </div>
+                  </Link>
                 </div>
                 <div className="notes-alignment-conatiner">
-                  {sortedNotes.map((data, i) => (
+                {
+                sortedNotes.map((data, i) => (
                     <CardNotes
                       key={i}
                       data={data}
@@ -272,3 +216,22 @@ export default class Landing extends Component {
     );
   }
 }
+
+const mapStateToProps = (state) => {
+  return {
+    todoList: state.home.todoList,
+    newList:state.home.sTodoList
+  };
+};
+Landing.propsTypes = {
+  gettodoList: PropTypes.func.isRequired,
+  deleteTodo:PropTypes.func.isRequired,
+  searchTodo:PropTypes.func.isRequired
+};
+
+export default connect(mapStateToProps, {
+  gettodoList,deleteTodo,searchTodo
+})(Landing);
+
+
+
